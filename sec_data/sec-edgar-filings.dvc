@@ -1,0 +1,6 @@
+outs:
+- md5: eb10e85fa26d8845877c7ac2d0fa63a5.dir
+  size: 2115471580
+  nfiles: 154
+  hash: md5
+  path: sec-edgar-filings

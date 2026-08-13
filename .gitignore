@@ -16,6 +16,7 @@ sec_data/cleaned/
 sec_data/chunks/
 models/
 
+
 # DVC local
 .dvc/cache/
 .dvc/tmp/
