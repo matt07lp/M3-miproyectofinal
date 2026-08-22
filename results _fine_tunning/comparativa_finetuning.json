@@ -1,0 +1,35 @@
+[
+  {
+    "Método":"Full Fine-Tuning",
+    "Parámetros Entrenables":"~3.2B (100%)",
+    "Precisión":"FP16\/BF16",
+    "VRAM Estimada (GB)":">40",
+    "Training Loss Final":0.7407,
+    "Validation Loss Final":0.843278,
+    "Tamaño Adaptadores":"~40 GB (modelo completo)",
+    "Hardware Mínimo":"A100 80GB \/ Multi-GPU",
+    "Riesgo de Overfitting":"Alto"
+  },
+  {
+    "Método":"LoRA",
+    "Parámetros Entrenables":"~1.8B (~50%)",
+    "Precisión":"BF16",
+    "VRAM Estimada (GB)":"~18-22",
+    "Training Loss Final":0.0389,
+    "Validation Loss Final":0.0384,
+    "Tamaño Adaptadores":"~6 GB",
+    "Hardware Mínimo":"A100 40GB",
+    "Riesgo de Overfitting":"Bajo"
+  },
+  {
+    "Método":"QLoRA",
+    "Parámetros Entrenables":"~24M (~0.4%)",
+    "Precisión":"NF4 + BF16 adapters",
+    "VRAM Estimada (GB)":"~8-12",
+    "Training Loss Final":0.04074,
+    "Validation Loss Final":0.03817,
+    "Tamaño Adaptadores":"~3.07 GB",
+    "Hardware Mínimo":"T4 16GB \/ L4",
+    "Riesgo de Overfitting":"Bajo"
+  }
+]

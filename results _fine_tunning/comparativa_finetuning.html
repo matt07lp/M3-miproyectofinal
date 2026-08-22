@@ -1,0 +1,79 @@
+
+<html>
+<head>
+    <title>Comparativa Fine-Tuning</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #2c3e50; }
+        table { border-collapse: collapse; width: 100%; margin-top: 15px; }
+        th, td { padding: 10px 14px; text-align: center; border: 1px solid #ddd; }
+        th { background-color: #3498db; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #e8f4f8; }
+    </style>
+</head>
+<body>
+    <h1>📊 Comparativa: Full Fine-Tuning vs LoRA vs QLoRA</h1>
+    <p><b>Modelo base:</b> Llama-3.2-3B &nbsp;|&nbsp; <b>Hardware:</b> A100 40GB (Colab)</p>
+    <table border="1" class="dataframe table table-bordered table-striped">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Método</th>
+      <th>Full Fine-Tuning</th>
+      <th>LoRA</th>
+      <th>QLoRA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Parámetros Entrenables</th>
+      <td>~3.2B (100%)</td>
+      <td>~1.8B (~50%)</td>
+      <td>~24M (~0.4%)</td>
+    </tr>
+    <tr>
+      <th>Precisión</th>
+      <td>FP16/BF16</td>
+      <td>BF16</td>
+      <td>NF4 + BF16 adapters</td>
+    </tr>
+    <tr>
+      <th>VRAM Estimada (GB)</th>
+      <td>&gt;40</td>
+      <td>~18-22</td>
+      <td>~8-12</td>
+    </tr>
+    <tr>
+      <th>Training Loss Final</th>
+      <td>0.7407</td>
+      <td>0.0389</td>
+      <td>0.04074</td>
+    </tr>
+    <tr>
+      <th>Validation Loss Final</th>
+      <td>0.843278</td>
+      <td>0.0384</td>
+      <td>0.03817</td>
+    </tr>
+    <tr>
+      <th>Tamaño Adaptadores</th>
+      <td>~40 GB (modelo completo)</td>
+      <td>~6 GB</td>
+      <td>~3.07 GB</td>
+    </tr>
+    <tr>
+      <th>Hardware Mínimo</th>
+      <td>A100 80GB / Multi-GPU</td>
+      <td>A100 40GB</td>
+      <td>T4 16GB / L4</td>
+    </tr>
+    <tr>
+      <th>Riesgo de Overfitting</th>
+      <td>Alto</td>
+      <td>Bajo</td>
+      <td>Bajo</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+</html>
