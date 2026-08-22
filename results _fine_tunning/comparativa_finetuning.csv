@@ -1,0 +1,4 @@
+Método,Parámetros Entrenables,Precisión,VRAM Estimada (GB),Training Loss Final,Validation Loss Final,Tamaño Adaptadores,Hardware Mínimo,Riesgo de Overfitting
+Full Fine-Tuning,~3.2B (100%),FP16/BF16,>40,0.7407,0.843278,~40 GB (modelo completo),A100 80GB / Multi-GPU,Alto
+LoRA,~1.8B (~50%),BF16,~18-22,0.0389,0.0384,~6 GB,A100 40GB,Bajo
+QLoRA,~24M (~0.4%),NF4 + BF16 adapters,~8-12,0.04074,0.03817,~3.07 GB,T4 16GB / L4,Bajo
