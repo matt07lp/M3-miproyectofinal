@@ -1,0 +1,5 @@
+Técnica,Hit Rate,MRR
+1. Baseline (Vectorial),100.00%,1.0000
+2. Metadata Filter (10-K),100.00%,0.8000
+3. Híbrido (Sem + BM25),100.00%,1.0000
+4. Híbrido + Re-ranking,100.00%,1.0000
