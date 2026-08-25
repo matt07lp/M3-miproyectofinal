@@ -15,7 +15,7 @@ sec_data/sec-edgar-filings/
 sec_data/cleaned/
 sec_data/chunks/
 models/
-Notebooks/chroma_db/chroma.sqlite3
+notebooks/chroma_db/chroma.sqlite3
 
 
 # DVC local
