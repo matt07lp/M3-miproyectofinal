@@ -159,43 +159,61 @@ def search_hybrid_v3(query: str, n_results: int = 5):
 # ══════════════════════════════════════════════════════════════
 # 5. GENERACIÓN RAG (Cell 9 de tu notebook)
 # ══════════════════════════════════════════════════════════════
-SYSTEM_PROMPT = """You are a financial analyst assistant. You answer questions ONLY based on the provided context from SEC filings (10-K and 10-Q).
+SYSTEM_PROMPT = """You are a financial analyst assistant. You ONLY answer questions about SEC filings (10-K, 10-Q).
 
-Rules:
-- Extract EXACT figures from the context. Do not round or estimate.
-- If the context contains tabular data, read the numbers carefully by matching row labels to column headers.
-- If the context does not contain enough information, say so explicitly.
-- Respond ONLY with valid JSON in this format:
+STRICT RULES:
+- Respond ONLY with a valid JSON object. Nothing else.
+- Do NOT include explanations, thoughts, reasoning, or any text outside the JSON.
+- Do NOT use markdown, code blocks, or any formatting around the JSON.
 
-{"answer": "your answer here", "confidence": "high|medium|low", "sources": ["source1"], "warnings": ["any warnings"]}
-"""
+REQUIRED JSON FORMAT:
+{"answer": "your answer here", "confidence": "high|medium|low", "sources": [], "warnings": []}
+
+If you cannot answer from the provided context, return:
+{"answer": "Insufficient data in provided documents.", "confidence": "low", "sources": [], "warnings": ["No relevant information found"]}"""
 
 
-def extract_json(text: str) -> dict:
-    """Extrae el primer bloque JSON válido del texto del modelo."""
-    # Intentar encontrar JSON con regex
-    patterns = [
-        r'\{[^{}]*\}',
-        r'\{.*?\}',
-    ]
-    for pattern in patterns:
-        matches = re.findall(pattern, text, re.DOTALL)
-        for match in matches:
-            try:
-                return json.loads(match)
-            except json.JSONDecodeError:
-                continue
 
-    # Fallback: intentar parsear todo el texto
+import re, json
+
+def clean_model_output(raw: str) -> str:
+    """Elimina 'pensamientos' y texto fuera del JSON."""
+    # Quitar bloques <think>...</think> o similares
+    raw = re.sub(r"<think>.*?</think>", "", raw, flags=re.DOTALL)
+    raw = re.sub(r"<\|.*?\|>", "", raw)
+    # Quitar markdown code blocks
+    raw = re.sub(r"```json\s*", "", raw)
+    raw = re.sub(r"```\s*", "", raw)
+    return raw.strip()
+
+def extract_json(raw: str) -> dict:
+    """Extrae JSON robusto con múltiples fallbacks."""
+    raw = clean_model_output(raw)
+    
+    # Intento 1: parsear directo
     try:
-        return json.loads(text)
+        return json.loads(raw)
     except json.JSONDecodeError:
-        return {
-            "answer": text.strip(),
-            "confidence": "low",
-            "sources": [],
-            "warnings": ["Failed to parse structured JSON from model output"]
-        }
+        pass
+    
+    # Intento 2: buscar el primer {...} completo
+    match = re.search(r"\{.*\}", raw, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            pass
+    
+    # Intento 3: buscar campos individuales con regex
+    answer_match = re.search(r'"answer"\s*:\s*"(.*?)"', raw, re.DOTALL)
+    confidence_match = re.search(r'"confidence"\s*:\s*"(.*?)"', raw)
+    
+    return {
+        "answer": answer_match.group(1) if answer_match else raw[:500],
+        "confidence": confidence_match.group(1) if confidence_match else "low",
+        "sources": [],
+        "warnings": ["JSON parsing failed - extracted via fallback"]
+    }
 
 
 def generate_response(query: str) -> dict:
@@ -242,7 +260,9 @@ def generate_response(query: str) -> dict:
     raw_output = output[0]["generated_text"].strip()
 
     # 6. Extraer JSON
-    response_data = extract_json(raw_output)
+    # 6. Limpiar y extraer JSON
+    cleaned_output = clean_model_output(raw_output)
+    response_data = extract_json(cleaned_output)
     if "sources" not in response_data or not response_data["sources"]:
         response_data["sources"] = sources
 
@@ -252,6 +272,7 @@ def generate_response(query: str) -> dict:
         response_data["warnings"] = response_data.get("warnings", []) + [f"Output guardrail: {out_reason}"]
 
     return response_data
+
 
 # ══════════════════════════════════════════════════════════════
 # 6. INTERFAZ GRADIO
